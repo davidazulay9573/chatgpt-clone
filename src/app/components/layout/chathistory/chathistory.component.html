@@ -1,0 +1,5 @@
+<ul class="chats list-unstyled">
+  <li *ngFor="let chat of chats" (click)="selectchat(chat.id)" class="p-2 border rounded">
+    {{ chat.name }}
+  </li>
+</ul>

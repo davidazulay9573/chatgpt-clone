@@ -1,46 +1,86 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterOutlet } from '@angular/router';
-import { ConversationsListComponent } from './components/layout/conversations-list/conversations-list.component';
+import { ChatHistoryComponent } from './components/layout/chathistory/chathistory.component';
 import { MessageInputComponent } from './components/layout/message-input/message-input.component';
-import { Conversation } from './model/Conversation';
-import { ConversationService } from './services/conversation/conversation.service';
+import { Chat } from './model/interfaces';
+import { ChatService } from './services/chat/chat.service';
+import { BotService } from './services/bot/bot.service'; 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ConversationsListComponent, MessageInputComponent],
+  imports: [RouterOutlet, ChatHistoryComponent, MessageInputComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'] 
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-  conversations: Conversation[] = []; 
 
-  constructor(private router: Router, private conversationService: ConversationService) {}
+export class AppComponent implements OnInit {
+  chats: Chat[] = [];
+
+  constructor(
+    private router: Router, 
+    private chatService: ChatService, 
+    private botService: BotService
+  ) {}
 
   ngOnInit() {
-    this.conversationService.getConversations().subscribe(conversations => {
-      this.conversations = conversations;
+    this.chatService.getChats().subscribe(chats => {
+      this.chats = chats;
     });
   }
 
+  onChatSelected(chatId: string) {
+    this.router.navigate([`/chat/${chatId}`]);
+  }
+
   onMessageSent(message: string) {
-    const newConversationId = this.createNewConversation(message);
-    this.router.navigate([`/conversations/${newConversationId}`]);
+    const currentChatId = this.getCurrentChatId(); 
+
+    if (currentChatId) {
+      this.chatService.getChat(currentChatId).subscribe(chat => {
+        if (chat) {
+          this.continueChat(currentChatId, message); 
+        } else {
+          this.onNewChat(message);
+        }
+      });
+    } else {
+      this.onNewChat(message);
+    }
   }
 
-  onConversationSelected(conversationId: string) {
-    this.router.navigate([`/conversations/${conversationId}`]);
+  /* --------------------- */
+  private getCurrentChatId(): string | null {
+    const currentUrl = this.router.url;
+    const match = currentUrl.match(/chat\/(\d+)/);
+    return match ? match[1] : null;
   }
 
-  createNewConversation(message: string): number {
-    const newConversation: Conversation = {
-      id: Math.floor(Math.random() * 1000).toString(), 
-      name : "ooo",
-      messages: [message] 
+  private continueChat(chatId: string, message: string) {
+    this.chatService.getChat(chatId).subscribe(chat => {
+      if (chat) {
+        chat.messages.push();
+        this.chatService.addMessage(chat.id, { sender: 'user', content: message });
+        
+        this.botService.sendMessage(chat).subscribe(response => {
+          const botMessage = response.choices[0].message.content; 
+          this.chatService.addMessage(chat.id, { sender: 'bot', content: botMessage });
+        });
+      }
+    });
+  }
+
+  private onNewChat(message: string): void {
+    const newChat: Chat = {
+      id: Date.now().toString(), 
+      name: message,
+      messages: []
     };
 
-    this.conversationService.addConversation(newConversation); 
-    return parseInt(newConversation.id);
+    this.chatService.addChat(newChat);
+    this.continueChat(newChat.id, message); 
+
+    this.router.navigate([`/chat/${newChat.id}`]);
   }
 }

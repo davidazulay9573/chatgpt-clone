@@ -1,20 +1,27 @@
-<div class="container-fluid d-flex flex-column" style="height: 100vh;"> 
-  <div class="row flex-grow-1 mx-0"> 
-    <div class="col-3 conversations-list border-end d-flex flex-column mt-5"> 
-      <app-conversations-list 
-          [conversations]="conversations" 
-          (conversationSelected)="onConversationSelected($event)">
-      </app-conversations-list>
+<div class="container-fluid d-flex flex-column" style="height: 100vh;">
+  <div class="row flex-grow-1 mx-0">
+    
+    <!-- Chat History Sidebar -->
+    <div class="col-12 col-md-3 border-end d-flex flex-column mt-5">
+      <app-chathistory 
+          [chats]="chats" 
+          (chatSelected)="onChatSelected($event)">
+      </app-chathistory>
     </div>
 
-    <div class="col-9 chat-window d-flex flex-column"> 
-      <div class="flex-grow-1">
+    <!-- Chat Window -->
+    <div class="col-12 col-md-9 chat-window d-flex flex-column">
+      
+      <!-- Chat Content -->
+      <div class="flex-grow-1" style="min-height: 0; overflow-y: auto;">
         <router-outlet></router-outlet>
       </div>
 
-      <div class="message-input-container mt-3 p-4"> 
+      <!-- Message Input -->
+      <div class="message-input-container mt-3 p-4">
         <app-message-input (messageSent)="onMessageSent($event)"></app-message-input>
       </div>
+      
     </div>
   </div>
 </div>

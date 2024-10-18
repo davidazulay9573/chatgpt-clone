@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports : [FormsModule],
   templateUrl: './message-input.component.html',
-  styleUrl: './message-input.component.css'
 })
 
 export class MessageInputComponent {

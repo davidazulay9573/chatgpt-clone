@@ -1,0 +1,11 @@
+<div class="container">
+  <div class="chat-window p-3 mt-5">
+    <div *ngFor="let message of messages" class="mb-2">
+      <div [ngClass]="{'text-end': message.sender === 'user', 'text-start': message.sender !== 'user'}">
+        <div class="rounded p-2 d-inline-block" [ngClass]="message.sender !== 'user' ? 'bg-secondary text-white' : 'bg-primary text-white'">
+          {{ message.content }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
