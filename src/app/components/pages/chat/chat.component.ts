@@ -10,6 +10,7 @@ import { Chat, Message } from '../../../model/interfaces';
   imports: [CommonModule],
   templateUrl: './chat.component.html',
 })
+
 export class ChatComponent implements OnInit {
   chatId: string | null = null;
   chat: Chat | null = null;

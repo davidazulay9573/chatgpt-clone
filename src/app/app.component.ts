@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { ChatHistoryComponent } from './components/layout/chathistory/chathistory.component';
+import { ChatHistoryComponent } from './components/layout/chat-history/chat-history.component';
 import { MessageInputComponent } from './components/layout/message-input/message-input.component';
 import { Chat } from './model/interfaces';
 import { ChatService } from './services/chat/chat.service';

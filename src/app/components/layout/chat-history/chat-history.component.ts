@@ -7,10 +7,10 @@ export interface chat {
 }
 
 @Component({
-  selector: 'app-chathistory',
+  selector: 'app-chat-history',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './chathistory.component.html',
+  templateUrl: './chat-history.component.html',
 })
 
 export class ChatHistoryComponent {

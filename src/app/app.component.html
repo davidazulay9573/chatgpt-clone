@@ -1,19 +1,30 @@
-<div class="container-fluid d-flex flex-column" style="height: 100vh;">
-  <div class="row flex-grow-1 mx-0">
-    <div class="col-12 col-md-3 border-end d-flex flex-column mt-5">
-      <app-chathistory 
+<div class="container-fluid" style="height: 100vh; overflow: hidden;">
+  <div class="row mx-0" style="height: 100%;">
+    <div class="col-12 col-md-3 border-end d-flex flex-column" style="height: 100vh; position: fixed;">
+      <app-chat-history 
         [chats]="chats" 
         (chatSelected)="onChatSelected($event)">
-      </app-chathistory>
+      </app-chat-history>
     </div>
-
-    <div class="col-12 col-md-9 d-flex flex-column">
-      <div class="flex-grow-1 d-flex flex-column align-items-center" style="max-width: 800px; margin: 0 auto;">
-        <div class="w-100 m-5">
+    
+    <div class="col-md-9 d-flex flex-column" style="margin-left: 28%; padding-left: 5rem; height: 100vh;">
+      <div class="flex-grow-1 d-flex flex-column position-relative">
+        <div class="w-100 p-5" 
+             style="position: absolute;
+                    top: 0;
+                    bottom: 100px;
+                    left: 0;
+                    right: 0;
+                    overflow-y: auto;
+                    overflow-x: hidden;">
           <router-outlet></router-outlet>
         </div>
-
-        <div class="message-input-container m-5 w-100">
+        
+        <div class="message-input-container p-3 w-100" 
+             style="position: absolute;
+                    bottom: 0;
+                    background-color: white;
+                    padding-right: 5rem;">
           <app-message-input 
             (messageSent)="onMessageSent($event)" 
             [isBotTyping]="isBotTyping">

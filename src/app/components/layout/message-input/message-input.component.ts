@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, FormsModule],
   templateUrl: './message-input.component.html',
 })
+
 export class MessageInputComponent {
   messageContent: string = '';
   @Input() isBotTyping: boolean = false; 
