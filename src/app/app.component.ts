@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { ChatHistoryComponent } from './components/layout/chathistory/chathistory.component';
 import { MessageInputComponent } from './components/layout/message-input/message-input.component';
 import { Chat } from './model/interfaces';
 import { ChatService } from './services/chat/chat.service';
-import { BotService } from './services/bot/bot.service'; 
+import { BotService } from './services/bot/bot.service';
 
 @Component({
   selector: 'app-root',
@@ -14,9 +13,11 @@ import { BotService } from './services/bot/bot.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
 export class AppComponent implements OnInit {
   chats: Chat[] = [];
+  isBotTyping: boolean = false;
+  messageContent: string = '';
+  typingIntervalId: any = null; 
 
   constructor(
     private router: Router, 
@@ -35,6 +36,11 @@ export class AppComponent implements OnInit {
   }
 
   onMessageSent(message: string) {
+    if (this.isBotTyping) {
+      this.stopTypingEffect();
+      return;
+    }
+
     const currentChatId = this.getCurrentChatId(); 
 
     if (currentChatId) {
@@ -50,7 +56,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  /* --------------------- */
   private getCurrentChatId(): string | null {
     const currentUrl = this.router.url;
     const match = currentUrl.match(/chat\/(\d+)/);
@@ -60,15 +65,54 @@ export class AppComponent implements OnInit {
   private continueChat(chatId: string, message: string) {
     this.chatService.getChat(chatId).subscribe(chat => {
       if (chat) {
-        chat.messages.push();
         this.chatService.addMessage(chat.id, { sender: 'user', content: message });
-        
-        this.botService.sendMessage(chat).subscribe(response => {
-          const botMessage = response.choices[0].message.content; 
-          this.chatService.addMessage(chat.id, { sender: 'bot', content: botMessage });
-        });
+        this.isBotTyping = true;
+
+          this.botService.sendMessage(chat).subscribe(response => {
+            const botMessage = response.choices[0].message.content;
+            this.displayTypingEffect(chat.id, botMessage); 
+          });
+      
       }
     });
+  }
+
+  private displayTypingEffect(chatId: string, botMessage: string) {
+    const words = botMessage.split('');  
+    let typedMessage = '';
+    let index = 0;
+
+    this.chatService.addMessage(chatId, { sender: 'bot', content: '' });
+    
+    this.typingIntervalId = setInterval(() => {
+      if (index < words.length) {
+        typedMessage += words[index];  
+        this.updateChatMessage(chatId, typedMessage); 
+        index++;
+      } else {
+        this.stopTypingEffect(); 
+      }
+    }, 50);  
+  }
+
+  private updateChatMessage(chatId: string, message: string) {
+    this.chatService.getChat(chatId).subscribe(chat => {
+      if (chat) {
+        const botMessageIndex = chat.messages.length - 1;
+        if (botMessageIndex !== -1) {
+          chat.messages[botMessageIndex].content = message;  
+          this.chatService.updateChat(chat); 
+        }
+      }
+    });
+  }
+
+  private stopTypingEffect() {
+    if (this.typingIntervalId) {
+      clearInterval(this.typingIntervalId); 
+      this.typingIntervalId = null; 
+    }
+    this.isBotTyping = false; 
   }
 
   private onNewChat(message: string): void {
@@ -80,7 +124,6 @@ export class AppComponent implements OnInit {
 
     this.chatService.addChat(newChat);
     this.continueChat(newChat.id, message); 
-
     this.router.navigate([`/chat/${newChat.id}`]);
   }
 }

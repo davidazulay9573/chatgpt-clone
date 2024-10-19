@@ -1,27 +1,25 @@
 <div class="container-fluid d-flex flex-column" style="height: 100vh;">
   <div class="row flex-grow-1 mx-0">
-    
-    <!-- Chat History Sidebar -->
     <div class="col-12 col-md-3 border-end d-flex flex-column mt-5">
       <app-chathistory 
-          [chats]="chats" 
-          (chatSelected)="onChatSelected($event)">
+        [chats]="chats" 
+        (chatSelected)="onChatSelected($event)">
       </app-chathistory>
     </div>
 
-    <!-- Chat Window -->
-    <div class="col-12 col-md-9 chat-window d-flex flex-column">
-      
-      <!-- Chat Content -->
-      <div class="flex-grow-1" style="min-height: 0; overflow-y: auto;">
-        <router-outlet></router-outlet>
-      </div>
+    <div class="col-12 col-md-9 d-flex flex-column">
+      <div class="flex-grow-1 d-flex flex-column align-items-center" style="max-width: 800px; margin: 0 auto;">
+        <div class="w-100 m-5">
+          <router-outlet></router-outlet>
+        </div>
 
-      <!-- Message Input -->
-      <div class="message-input-container mt-3 p-4">
-        <app-message-input (messageSent)="onMessageSent($event)"></app-message-input>
+        <div class="message-input-container m-5 w-100">
+          <app-message-input 
+            (messageSent)="onMessageSent($event)" 
+            [isBotTyping]="isBotTyping">
+          </app-message-input>
+        </div>
       </div>
-      
     </div>
   </div>
 </div>

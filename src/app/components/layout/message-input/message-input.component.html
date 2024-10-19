@@ -1,4 +1,21 @@
-<div class="input-group">
-  <input  type="text" [(ngModel)]="messageContent" class="form-control border rounded" placeholder="Type your message here">
-  <button class="btn btn-primary" (click)="sendMessage()">Send</button>
+<div class="input-group w-75">
+  <input 
+    type="text" 
+    [(ngModel)]="messageContent" 
+    class="form-control border rounded-start" 
+    placeholder="Type your message here"
+    style="border-right: none;">
+  
+  <button 
+    class=" border-start-0 rounded-end d-flex align-items-center justify-content-center"
+    style="width: 50px;"
+    (click)="sendMessage()"
+    >
+    <ng-container *ngIf="!isBotTyping; else squareIcon">
+        Send
+    </ng-container>
+    <ng-template #squareIcon>
+        Stop
+    </ng-template>
+  </button>
 </div>

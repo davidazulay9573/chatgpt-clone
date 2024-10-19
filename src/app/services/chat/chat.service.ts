@@ -6,6 +6,7 @@ import { isPlatformBrowser } from '@angular/common';
 @Injectable({
   providedIn: 'root',
 })
+
 export class ChatService {
   private chats: Chat[] = [];
   private chatsSubject: BehaviorSubject<Chat[]> = new BehaviorSubject<Chat[]>([]);
@@ -43,19 +44,25 @@ export class ChatService {
     this.saveChats(); 
   }
 
+  updateChat(updatedChat: Chat): void {
+    const chatIndex = this.chats.findIndex(chat => chat.id === updatedChat.id);
+    if (chatIndex !== -1) {
+      this.chats[chatIndex] = updatedChat;
+      this.chatsSubject.next(this.chats); 
+      this.saveChats(); 
+    }
+  }
+
   addMessage(chatId: string, message: Message): void {
     const chat = this.chats.find(chat => chat.id === chatId);
 
     if (chat) {
-        if (!chat.messages) {
-        chat.messages = [];
-      }
-
       chat.messages.push(message);
       this.chatsSubject.next(this.chats);
       this.saveChats();
     }
   }
+
   /* ------------------------ */
   private saveChats(): void {
     if (isPlatformBrowser(this.platformId)) {

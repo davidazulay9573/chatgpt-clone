@@ -1,10 +1,21 @@
-<div class="container">
-  <div class="chat-window p-3 mt-5">
-    <div *ngFor="let message of messages" class="mb-2">
-      <div [ngClass]="{'text-end': message.sender === 'user', 'text-start': message.sender !== 'user'}">
-        <div class="rounded p-2 d-inline-block" [ngClass]="message.sender !== 'user' ? 'bg-secondary text-white' : 'bg-primary text-white'">
-          {{ message.content }}
-        </div>
+<div class="col-12 col-md-9 chat-window d-flex flex-column">
+  <div class="flex-grow-1" style="min-height: 0; overflow-y: auto;">
+    <div *ngFor="let message of chat?.messages" class="message d-flex" 
+         [ngClass]="{'justify-content-end': message.sender === 'user'}">
+      <div class="message-content p-2 rounded mb-2"
+           [ngClass]="{
+             'bg-secondary text-white user-message': message.sender === 'user',
+             'bg-light bot-message w-100': message.sender !== 'user'
+           }"
+           style="word-wrap: break-word;">
+        <ng-container *ngFor="let part of splitMessage(message.content)">
+          <ng-container *ngIf="part.isCodeBlock; else regularText">
+            <pre class="bg-light text-dark p-2 rounded mb-0">{{ part.text }}</pre>
+          </ng-container>
+          <ng-template #regularText>
+            {{ part.text }}
+          </ng-template>
+        </ng-container>
       </div>
     </div>
   </div>
