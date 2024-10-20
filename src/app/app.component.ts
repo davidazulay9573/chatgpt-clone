@@ -18,9 +18,7 @@ import { CommonModule } from '@angular/common';
 
 export class AppComponent implements OnInit {
   chats: Chat[] = [];
-  isBotTyping: boolean = false;
   messageContent: string = '';
-  typingIntervalId: any = null;
   showSidebar: boolean = false;
 
   constructor(
@@ -44,7 +42,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  toggleSidebar() {
+  onToggleSidebar() {
     this.showSidebar = !this.showSidebar;
   }
 
@@ -55,18 +53,13 @@ export class AppComponent implements OnInit {
     }
   }
 
-  onMessageSent(message: string) {
-    if (this.isBotTyping) {
-      this.stopTypingEffect();
-      return;
-    }
-
+  onSubmit(message: string) {
     const currentChatId = this.getCurrentChatId(); 
 
     if (currentChatId) {
       this.chatService.getChat(currentChatId).subscribe(chat => {
         if (chat) {
-          this.continueChat(currentChatId, message); 
+          this.onExistingChat(chat.id, message);
         } else {
           this.onNewChat(message);
         }
@@ -76,63 +69,10 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private getCurrentChatId(): string | null {
-    const currentUrl = this.router.url;
-    const match = currentUrl.match(/chat\/(\d+)/);
-    return match ? match[1] : null;
-  }
-
-  private continueChat(chatId: string, message: string) {
-    this.chatService.getChat(chatId).subscribe(chat => {
-      if (chat) {
-        this.chatService.addMessage(chat.id, { sender: 'user', content: message });
-        this.isBotTyping = true;
-
-          this.botService.sendMessage(chat).subscribe(response => {
-            const botMessage = response.choices[0].message.content;
-            this.displayTypingEffect(chat.id, botMessage); 
-          });
-      
-      }
-    });
-  }
-
-  private displayTypingEffect(chatId: string, botMessage: string) {
-    const words = botMessage.split('');  
-    let typedMessage = '';
-    let index = 0;
-
-    this.chatService.addMessage(chatId, { sender: 'bot', content: '' });
-    
-    this.typingIntervalId = setInterval(() => {
-      if (index < words.length) {
-        typedMessage += words[index];  
-        this.updateChatMessage(chatId, typedMessage); 
-        index++;
-      } else {
-        this.stopTypingEffect(); 
-      }
-    }, 50);  
-  }
-
-  private updateChatMessage(chatId: string, message: string) {
-    this.chatService.getChat(chatId).subscribe(chat => {
-      if (chat) {
-        const botMessageIndex = chat.messages.length - 1;
-        if (botMessageIndex !== -1) {
-          chat.messages[botMessageIndex].content = message;  
-          this.chatService.updateChat(chat); 
-        }
-      }
-    });
-  }
-
-  private stopTypingEffect() {
-    if (this.typingIntervalId) {
-      clearInterval(this.typingIntervalId); 
-      this.typingIntervalId = null; 
-    }
-    this.isBotTyping = false; 
+  /* ------------------------- */
+  
+  private onExistingChat(chatId : string, message : string) : void{
+    this.botComunication(chatId, message); 
   }
 
   private onNewChat(message: string): void {
@@ -143,7 +83,26 @@ export class AppComponent implements OnInit {
     };
 
     this.chatService.addChat(newChat);
-    this.continueChat(newChat.id, message); 
+    this.botComunication(newChat.id, message); 
     this.router.navigate([`/chat/${newChat.id}`]);
+  }
+
+  private botComunication(chatId: string, message: string) {
+    this.chatService.getChat(chatId).subscribe(chat => {
+      if (chat) {
+        this.chatService.addMessage(chat.id, { sender: 'user', content: message });
+        
+        this.botService.sendMessage(chat).subscribe(response => {
+          const botMessage = response.choices[0].message.content;
+          this.chatService.addMessage(chat.id, { sender: 'bot', content: botMessage });
+        });  
+      }
+    });
+  }
+
+  private getCurrentChatId(): string | null {
+    const currentUrl = this.router.url;
+    const match = currentUrl.match(/chat\/(\d+)/);
+    return match ? match[1] : null;
   }
 }

@@ -2,28 +2,33 @@
   <div class="row vh-100">
     <button class="btn btn-sm position-fixed top-0 start-0 mt-2 ms-2 d-md-none" 
             type="button" 
-            (click)="toggleSidebar()"
+            (click)="onToggleSidebar()"
             style="z-index: 1046; padding: 0.25rem 0.5rem; font-size: 1.5rem;">
       ☰
     </button>
 
-    <div class="col-md-3 mt-5 border-end p-0 vh-100 bg-white position-fixed start-0" 
+    <!-- left col -->
+    <div class="col-md-3 bg-white text-center position-fixed start-0" 
          [class.d-none]="!showSidebar" 
          [class.d-md-block]="true">
+      
+      <p class="p-4">______G&G_______</p>
       <app-chat-history 
         [chats]="chats" 
         (chatSelected)="onChatSelected($event)">
       </app-chat-history>
     </div>
-      
-    <div class="col-12 col-md-9 offset-md-3 d-flex flex-column vh-100">
+
+    <!-- right col -->
+    <div class="col-12 p-5 col-md-11 offset-md-3 d-flex flex-column vh-100" style="padding-left: 15px;">
+      <!-- chat section -->
       <div class="flex-grow-1 mt-5 overflow-auto px-3 px-md-5 py-4">
         <router-outlet></router-outlet>
       </div>
-       <div class="message-input-container p-3 bg-white border-top" *ngIf="!showSidebar">
+      <!-- input -->
+      <div class="message-input-container p-3 bg-white border-top" *ngIf="!showSidebar">
         <app-message-input 
-          (messageSent)="onMessageSent($event)" 
-          [isBotTyping]="isBotTyping">
+          (messageSent)="onSubmit($event)">
         </app-message-input>
       </div>
     </div>
