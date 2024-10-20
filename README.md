@@ -12,7 +12,8 @@ Alternatively, you can start a new conversation by sending a message through the
 ```
 git clone https://github.com/davidazulay9573/chatgpt-clone
 ```
-To ensure the bot service functions properly, make sure to update the apikey in /services/bot.
+To ensure the bot service functions properly, make sure to update the apikey 
+in /services/bot with your openai apikey.
 ```
 ng serve
 ```
