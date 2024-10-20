@@ -1,38 +1,58 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { ChatHistoryComponent } from './components/layout/chat-history/chat-history.component';
 import { MessageInputComponent } from './components/layout/message-input/message-input.component';
+import { NgClass } from '@angular/common';
 import { Chat } from './model/interfaces';
 import { ChatService } from './services/chat/chat.service';
 import { BotService } from './services/bot/bot.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ChatHistoryComponent, MessageInputComponent],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  imports: [RouterOutlet, CommonModule, ChatHistoryComponent, MessageInputComponent, NgClass],
+  templateUrl: './app.component.html'
 })
+
 export class AppComponent implements OnInit {
   chats: Chat[] = [];
   isBotTyping: boolean = false;
   messageContent: string = '';
-  typingIntervalId: any = null; 
+  typingIntervalId: any = null;
+  showSidebar: boolean = false;
 
   constructor(
     private router: Router, 
     private chatService: ChatService, 
-    private botService: BotService
+    private botService: BotService,
+    @Inject(PLATFORM_ID) private platformId: any
   ) {}
 
   ngOnInit() {
     this.chatService.getChats().subscribe(chats => {
       this.chats = chats;
     });
+
+    if (isPlatformBrowser(this.platformId)) { 
+      this.router.events.subscribe(() => {
+        if (window?.innerWidth < 768) {
+          this.showSidebar = false;
+        }
+      });
+    }
+  }
+
+  toggleSidebar() {
+    this.showSidebar = !this.showSidebar;
   }
 
   onChatSelected(chatId: string) {
     this.router.navigate([`/chat/${chatId}`]);
+    if (isPlatformBrowser(this.platformId) && window.innerWidth < 768) {
+      this.showSidebar = false;
+    }
   }
 
   onMessageSent(message: string) {

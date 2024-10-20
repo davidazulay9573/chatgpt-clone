@@ -1,30 +1,30 @@
-<div class="container-fluid h-100 overflow-hidden">
-  <div class="row h-100 mx-0">
-    <!-- Left Column: Chat History -->
-    <div class="col-12 col-md-3 border-end d-flex flex-column vh-100 position-fixed">
+<div class="container-fluid vh-100 overflow-hidden">
+  <div class="row vh-100">
+    <button class="btn btn-sm position-fixed top-0 start-0 mt-2 ms-2 d-md-none" 
+            type="button" 
+            (click)="toggleSidebar()"
+            style="z-index: 1046; padding: 0.25rem 0.5rem; font-size: 1.5rem;">
+      ☰
+    </button>
+
+    <div class="col-md-3 mt-5 border-end p-0 vh-100 bg-white position-fixed start-0" 
+         [class.d-none]="!showSidebar" 
+         [class.d-md-block]="true">
       <app-chat-history 
         [chats]="chats" 
         (chatSelected)="onChatSelected($event)">
       </app-chat-history>
     </div>
-    
-    <!-- Right Column: Chat + Input -->
-    <div class="col-md-9 d-flex flex-column" style="margin-left: 28%; padding-left: 5rem; height: 100vh;">
-      <div class="flex-grow-1 d-flex flex-column position-relative">
-        
-        <!-- Chat Section -->
-        <div class="w-100 p-5 position-absolute top-0 bottom-[100px] overflow-y-auto" style="max-height: calc(100vh - 100px);">
-          <router-outlet></router-outlet>
-        </div>
-        
-        <!-- Message Input Section -->
-        <div class="message-input-container p-3 w-100 position-absolute bottom-0 bg-white pr-5">
-          <app-message-input 
-            (messageSent)="onMessageSent($event)" 
-            [isBotTyping]="isBotTyping">
-          </app-message-input>
-        </div>
-        
+      
+    <div class="col-12 col-md-9 offset-md-3 d-flex flex-column vh-100">
+      <div class="flex-grow-1 mt-5 overflow-auto px-3 px-md-5 py-4">
+        <router-outlet></router-outlet>
+      </div>
+       <div class="message-input-container p-3 bg-white border-top" *ngIf="!showSidebar">
+        <app-message-input 
+          (messageSent)="onMessageSent($event)" 
+          [isBotTyping]="isBotTyping">
+        </app-message-input>
       </div>
     </div>
   </div>
