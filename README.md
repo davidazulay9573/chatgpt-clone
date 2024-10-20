@@ -1,7 +1,12 @@
 # ChatgptClone
-This project allows users to create new conversations with the bot or continue existing ones. You can interact with the bot by sending a message via the search field.
+This project allows users to create new conversations with the bot or continue existing ones.
 
-The left-hand menu shows the conversation history. By clicking on a conversation from the list, you'll be redirected to the corresponding chat at /chat/:id. Alternatively, you can start a new conversation by sending a message through the main path.
+You can interact with the bot by sending a message via the search field.
+
+The left-hand menu shows the conversation history, 
+By clicking on a conversation from the list, you'll be redirected to the corresponding chat at /chat/:id. 
+
+Alternatively, you can start a new conversation by sending a message through the main path.
 
 ## Run 
 ```
