@@ -97,7 +97,7 @@ export class AppComponent implements OnInit {
           this.chatService.addMessage(chat.id, { sender: 'bot', content: botMessage });
         });  
       }
-    });
+    })
   }
 
   private getCurrentChatId(): string | null {

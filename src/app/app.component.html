@@ -8,11 +8,10 @@
     </button>
 
     <!-- left col -->
-    <div class="col-md-3 bg-white text-center position-fixed start-0" 
+    <div class="col-md-3 p-1 mt-5 bg-white text-center position-fixed start-0" 
          [class.d-none]="!showSidebar" 
          [class.d-md-block]="true">
-      
-      <p class="p-4">______chatGPT_______</p>
+      <p>History</p>
       <app-chat-history 
         [chats]="chats" 
         (chatSelected)="onChatSelected($event)">
